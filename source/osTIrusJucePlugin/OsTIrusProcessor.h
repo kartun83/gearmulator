@@ -16,6 +16,7 @@ public:
 	jucePluginEditorLib::PluginEditorState* createEditorState() override;
 
 	// CLAP_EXT_REMOTE_CONTROLS
+	bool supportsRemoteControls() const noexcept override { return true; }
 	uint32_t remoteControlsPageCount() noexcept override;
 	bool remoteControlsPageFill(uint32_t _pageIndex, juce::String& _sectionName,
 	                            uint32_t& _pageID, juce::String& _pageName,
