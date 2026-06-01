@@ -219,3 +219,43 @@ namespace virus
 		}
 	}
 }
+
+double virus::VirusProcessor::getTailLengthSeconds() const
+{
+	const auto* ctrl = getControllerConst();
+	if(!ctrl)
+		return 0.0;
+
+	double tail = 0.0;
+
+	// Reverb tail.
+	// Virus TI hardware: Reverb Time (page 110, index 4) is 0–127 and maps to
+	// approximately 0–16 seconds of decay at the hardware level.
+	// Only contributes if Reverb Send is non-zero.
+	const auto* reverbSend = ctrl->getParameter(g_paramReverbSend, 0);
+	const auto* reverbTime = ctrl->getParameter(g_paramReverbTime, 0);
+	if(reverbSend && reverbTime && reverbSend->getUnnormalizedValue() > 0)
+	{
+		constexpr double kMaxReverbSeconds = 16.0;
+		tail = std::max(tail, (reverbTime->getUnnormalizedValue() / 127.0) * kMaxReverbSeconds);
+	}
+
+	// Delay tail.
+	// Delay Time 0–127 → 0–1000 ms (free-running mode).
+	// Feedback determines how many repetitions ring out:
+	//   effective tail ≈ delayTime / (1 – feedback), capped at 30 s to avoid infinity.
+	const auto* delaySend     = ctrl->getParameter(g_paramDelaySend,     0);
+	const auto* delayTime     = ctrl->getParameter(g_paramDelayTime,     0);
+	const auto* delayFeedback = ctrl->getParameter(g_paramDelayFeedback, 0);
+	if(delaySend && delayTime && delayFeedback && delaySend->getUnnormalizedValue() > 0)
+	{
+		constexpr double kMaxDelaySeconds  = 30.0;
+		constexpr double kDelayTimeRangeMs = 1000.0;
+		const double delaySeconds  = (delayTime->getUnnormalizedValue() / 127.0) * (kDelayTimeRangeMs / 1000.0);
+		const double feedback      = delayFeedback->getUnnormalizedValue() / 127.0;
+		const double delayTail     = feedback < 0.99 ? delaySeconds / (1.0 - feedback) : kMaxDelaySeconds;
+		tail = std::max(tail, std::min(delayTail, kMaxDelaySeconds));
+	}
+
+	return tail;
+}

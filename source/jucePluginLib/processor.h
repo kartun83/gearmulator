@@ -89,6 +89,13 @@ namespace pluginLib
 			return m_controller.get();
 		}
 
+		// Const access to the controller without triggering lazy creation.
+		// Returns nullptr if the controller has not been created yet.
+		const Controller* getControllerConst() const
+		{
+			return m_controller.get();
+		}
+
 		virtual bool setLatencyBlocks(uint32_t _blocks);
 		virtual void updateLatencySamples();
 

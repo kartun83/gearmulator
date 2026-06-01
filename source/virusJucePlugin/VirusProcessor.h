@@ -16,6 +16,7 @@ namespace virus
 	    ~VirusProcessor() override;
 
 	    void processBpm(float _bpm) override;
+		double getTailLengthSeconds() const override;
 
 		// _____________
 		//

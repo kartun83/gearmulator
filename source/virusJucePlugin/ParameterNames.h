@@ -3,6 +3,11 @@
 namespace virus
 {
 	static constexpr char g_paramDelayReverbMode[] = "Delay/Reverb Mode";
+	static constexpr char g_paramReverbSend[]      = "Reverb Send";
+	static constexpr char g_paramReverbTime[]      = "Reverb Time";
+	static constexpr char g_paramDelaySend[]       = "Delay Send";
+	static constexpr char g_paramDelayTime[]       = "Delay Time";
+	static constexpr char g_paramDelayFeedback[]   = "Delay Feedback";
 	static constexpr char g_paramPartVolume[] = "Part Volume";
 	static constexpr char g_paramPatchVolume[] = "Patch Volume";
 	static constexpr char g_paramPartPanorama[] = "Panorama";
