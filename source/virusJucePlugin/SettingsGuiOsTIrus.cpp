@@ -35,11 +35,10 @@ namespace genericVirusUI
 			});
 		}
 
-#ifdef HAS_CLAP_JUCE_EXTENSIONS
 		// ---- CLAP: suggest remote controls page on gesture ------------------
-		auto& config = _editor->getProcessor().getConfig();
-
-		auto* clapSection   = juceRmlUi::helper::findChild(_root, "clapSection");
+		// The section is always shown; the config key is only acted upon by
+		// OsTIrusProcessor when running as a CLAP plugin.
+		auto& config        = _editor->getProcessor().getConfig();
 		auto* btSuggest     = juceRmlUi::helper::findChild(_root, "btClapSuggestPage");
 		auto* btSuggestComp = juceRmlUi::helper::findChildT<juceRmlUi::ElemButton>(btSuggest, "button");
 
@@ -52,10 +51,5 @@ namespace genericVirusUI
 			config.saveIfNeeded();
 			btSuggestComp->setChecked(newValue);
 		});
-#else
-		// Hide the CLAP section in non-CLAP builds
-		if(auto* clapSection = juceRmlUi::helper::findChild(_root, "clapSection"))
-			juceRmlUi::helper::setVisible(clapSection, false);
-#endif
 	}
 }
