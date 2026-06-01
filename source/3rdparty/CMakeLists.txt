@@ -18,9 +18,14 @@ add_library(Freetype::Freetype ALIAS freetype)
 # Lua 5.4 for RmlUi scripting
 add_subdirectory(lua)
 
+# lunasvg for RmlUi SVG plugin
+set(LUNASVG_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(lunasvg)
+
 # Enable RmlUi Lua bindings and point to our bundled Lua
 set(RMLUI_LUA_BINDINGS ON CACHE BOOL "" FORCE)
 set(RMLUI_LUA_BINDINGS_LIBRARY "lua_as_cxx" CACHE STRING "" FORCE)
+set(RMLUI_SVG_PLUGIN ON CACHE BOOL "" FORCE)
 
 # Create the Lua::Lua target so RmlUi's Dependencies.cmake finds it and skips find_package(Lua)
 add_library(Lua::Lua INTERFACE IMPORTED)
