@@ -13,23 +13,27 @@ namespace genericVirusUI
 	{
 		auto* leds = _editor->getLeds().get();
 
+		// ---- Logo animation -------------------------------------------------
+		// Hide only the animation section when the skin has no logo element;
+		// other sections (CLAP, future) are unaffected.
 		if(!leds || !leds->supportsLogoAnimation())
 		{
-			juceRmlUi::helper::setVisible(_root, false);
-			return;
+			if(auto* animSection = juceRmlUi::helper::findChild(_root, "animationSection"))
+				juceRmlUi::helper::setVisible(animSection, false);
 		}
-
-		// ---- Logo animation -------------------------------------------------
-		auto* button = juceRmlUi::helper::findChild(_root, "btEnableLogoAnimations");
-		auto* buttonComp = juceRmlUi::helper::findChildT<juceRmlUi::ElemButton>(button, "button");
-
-		buttonComp->setChecked(leds->isLogoAnimationEnabled());
-
-		juceRmlUi::EventListener::AddClick(button, [leds, buttonComp]
+		else
 		{
-			leds->toggleLogoAnimation();
+			auto* button     = juceRmlUi::helper::findChild(_root, "btEnableLogoAnimations");
+			auto* buttonComp = juceRmlUi::helper::findChildT<juceRmlUi::ElemButton>(button, "button");
+
 			buttonComp->setChecked(leds->isLogoAnimationEnabled());
-		});
+
+			juceRmlUi::EventListener::AddClick(button, [leds, buttonComp]
+			{
+				leds->toggleLogoAnimation();
+				buttonComp->setChecked(leds->isLogoAnimationEnabled());
+			});
+		}
 
 #ifdef HAS_CLAP_JUCE_EXTENSIONS
 		// ---- CLAP: suggest remote controls page on gesture ------------------
