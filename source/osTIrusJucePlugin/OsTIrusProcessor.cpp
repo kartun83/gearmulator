@@ -49,11 +49,40 @@ OsTIrusProcessor::OsTIrusProcessor() :
 		m_remoteControlsPart = _part;
 		remoteControlsChanged();
 	});
+
+	// Build reverse lookup: parameter name → page index.
+	// Used to suggest the right remote controls page when the user touches a control.
+	for(uint32_t pageIdx = 0; pageIdx < virusTI::g_remoteControlsPageCount; ++pageIdx)
+	{
+		const auto& page = virusTI::g_remoteControlsPages[pageIdx];
+		for(const auto* name : page.params)
+		{
+			if(name)
+				m_paramNameToPage.emplace(name, pageIdx);
+		}
+	}
+
+	addListener(this);
 }
 
 OsTIrusProcessor::~OsTIrusProcessor()
 {
+	removeListener(this);
 	destroyEditorState();
+}
+
+void OsTIrusProcessor::audioProcessorParameterChangeGestureBegin(juce::AudioProcessor*, const int _parameterIndex)
+{
+	const auto& params = getParameters();
+	if(_parameterIndex < 0 || _parameterIndex >= static_cast<int>(params.size()))
+		return;
+
+	const auto name = params[_parameterIndex]->getName(255).toStdString();
+	const auto it   = m_paramNameToPage.find(name);
+	if(it == m_paramNameToPage.end())
+		return;
+
+	suggestRemoteControlsPage((it->second << 8) | m_remoteControlsPart);
 }
 
 uint32_t OsTIrusProcessor::remoteControlsPageCount() noexcept
