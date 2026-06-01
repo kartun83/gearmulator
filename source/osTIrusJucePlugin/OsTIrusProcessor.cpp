@@ -73,6 +73,9 @@ OsTIrusProcessor::~OsTIrusProcessor()
 
 void OsTIrusProcessor::audioProcessorParameterChangeGestureBegin(juce::AudioProcessor*, const int _parameterIndex)
 {
+	if(!getConfig().getBoolValue(g_clapSuggestPageKey, true))
+		return;
+
 	const auto& params = getParameters();
 	if(_parameterIndex < 0 || _parameterIndex >= static_cast<int>(params.size()))
 		return;

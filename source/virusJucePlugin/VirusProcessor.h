@@ -80,5 +80,11 @@ namespace virus
 
 	public:
 	    baseLib::Event<const virusLib::ROMFile*> evRomChanged;
+
+#ifdef HAS_CLAP_JUCE_EXTENSIONS
+		// Config key for the "suggest remote controls page on gesture" preference.
+		// Read/written by OsTIrusProcessor and SettingsGuiOsTIrus via getConfig().
+		static constexpr const char* const g_clapSuggestPageKey = "clapSuggestPage";
+#endif
 	};
 }

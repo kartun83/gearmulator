@@ -10,5 +10,14 @@
 		<button id="button" class="settings-checkbox"/>
 		<label>Enable Logo Animation</label>
 	</div>
+	<settingsspacer1/>
+	<div id="clapSection">
+		<h1>CLAP Controller Integration</h1>
+		<settingsspacer1/>
+		<div id="btClapSuggestPage" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Suggest remote controls page on touch</label>
+		</div>
+	</div>
 </body>
 </template>
