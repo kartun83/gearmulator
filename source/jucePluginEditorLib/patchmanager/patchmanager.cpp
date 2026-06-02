@@ -226,9 +226,13 @@ namespace jucePluginEditorLib::patchManager
 			if(_part == -1)
 				return;
 
-			juce::MessageManager::callAsync([this, _part, _savedPatches]
+			auto* self = this;
+			juce::MessageManager::callAsync([self, _part, _savedPatches]
 			{
-				setSelectedPatch(_part, _savedPatches.front());
+				std::lock_guard<std::mutex> lock(getInstancesMutex());
+				if (getInstances().find(self) == getInstances().end())
+					return;
+				self->setSelectedPatch(_part, _savedPatches.front());
 			});
 		});
 	}

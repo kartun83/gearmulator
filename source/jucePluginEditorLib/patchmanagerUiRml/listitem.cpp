@@ -250,11 +250,15 @@ namespace jucePluginEditorLib::patchManagerRml
 
 			const auto part = data->getPart();
 
-			getList().getDB().copyPatchesTo(source, patches, static_cast<int>(index), [this, part](const std::vector<pluginLib::patchDB::PatchPtr>& _patches)
+			auto* pm = dynamic_cast<patchManager::PatchManager*>(&getList().getDB());
+			getList().getDB().copyPatchesTo(source, patches, static_cast<int>(index), [pm, part](const std::vector<pluginLib::patchDB::PatchPtr>& _patches)
 			{
-				juce::MessageManager::callAsync([this, part, _patches]
+				juce::MessageManager::callAsync([pm, part, _patches]
 				{
-					getList().getDB().setSelectedPatch(part, _patches.front());
+					std::lock_guard<std::mutex> lock(patchManager::PatchManager::getInstancesMutex());
+					if (patchManager::PatchManager::getInstances().find(pm) == patchManager::PatchManager::getInstances().end())
+						return;
+					pm->setSelectedPatch(part, _patches.front());
 				});
 			});
 #endif
