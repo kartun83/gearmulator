@@ -26,5 +26,28 @@
 		</div>
 	</div>
 	<settingsspacer1/>
+	<div class="settings-advanced">
+		<h1>Preset Confirmation Timeout</h1>
+		<settingsspacer1/>
+		<h3>How long to wait for the DSP to confirm a preset load before giving up and moving to the next one. Increase if presets sound incomplete; decrease if switching feels sluggish after rapid browsing.</h3>
+		<settingsspacer1/>
+		<div id="btTimeoutFast" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Fast (~0.5 s)</label>
+		</div>
+		<div id="btTimeoutNormal" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Normal (~1 s)</label>
+		</div>
+		<div id="btTimeoutSlow" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Slow (~3 s, default)</label>
+		</div>
+		<div id="btTimeoutVerySlow" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Very Slow (~6 s)</label>
+		</div>
+	</div>
+	<settingsspacer1/>
 </body>
 </template>

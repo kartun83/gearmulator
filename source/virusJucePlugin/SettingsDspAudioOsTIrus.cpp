@@ -47,6 +47,14 @@ namespace genericVirusUI
 			parent->InsertBefore(std::move(clone), _template);
 		}
 	}
+	static constexpr std::pair<const char*, uint32_t> g_timeoutOptions[] =
+	{
+		{ "btTimeoutFast",     100 },
+		{ "btTimeoutNormal",   200 },
+		{ "btTimeoutSlow",     500 },
+		{ "btTimeoutVerySlow", 1200 },
+	};
+
 	SettingsDspAudioOsTIrus::SettingsDspAudioOsTIrus(const VirusEditor* _editor, Rml::Element* _root)
 		: m_editor(_editor)
 	{
@@ -85,6 +93,26 @@ namespace genericVirusUI
 		auto* templateUndocumented = juceRmlUi::helper::findChild(_root, "btSamplerateUndocumented");
 		setupSamplerateButtons(templateUndocumented, samplerates, preferred, current, false, processor);
 		templateUndocumented->GetParentNode()->RemoveChild(templateUndocumented);
+
+		// Setup preset confirmation timeout buttons
+		const auto currentTimeout = processor.getPresetConfirmationTimeout();
+
+		for(const auto& [id, value] : g_timeoutOptions)
+		{
+			auto* row = juceRmlUi::helper::findChild(_root, id, false);
+			if(!row)
+				continue;
+
+			auto* btn = juceRmlUi::helper::findChildT<juceRmlUi::ElemButton>(row, "button");
+			btn->setChecked(currentTimeout == value);
+			m_timeoutButtons.emplace_back(value, btn);
+
+			juceRmlUi::EventListener::AddClick(row, [this, &processor, value]
+			{
+				processor.setPresetConfirmationTimeout(value);
+				updateTimeoutButtons();
+			});
+		}
 	}
 
 	void SettingsDspAudioOsTIrus::updateButtons() const
@@ -99,5 +127,13 @@ namespace genericVirusUI
 			else
 				button->setChecked(std::fabs(samplerate - currentSamplerate) < 1.0f);
 		}
+	}
+
+	void SettingsDspAudioOsTIrus::updateTimeoutButtons() const
+	{
+		auto& processor = static_cast<virus::VirusProcessor&>(m_editor->getProcessor());
+		const auto current = processor.getPresetConfirmationTimeout();
+		for(const auto& [value, button] : m_timeoutButtons)
+			button->setChecked(value == current);
 	}
 }

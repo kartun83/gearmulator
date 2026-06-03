@@ -57,6 +57,9 @@ namespace virusLib
 		uint64_t getDspClockHz() const override;
 		bool canModifyDspClock() const override { return true; }
 
+		void setPresetConfirmationTimeout(uint32_t _timeout);
+		uint32_t getPresetConfirmationTimeout() const;
+
 		static void applyDspMemoryPatches(const DspSingle* _dspA, const DspSingle* _dspB, const ROMFile& _rom);
 		void applyDspMemoryPatches() const;
 

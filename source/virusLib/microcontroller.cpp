@@ -300,25 +300,35 @@ bool Microcontroller::sendPreset(const uint8_t program, const TPreset& preset, c
 		// If we write a single-mode single, remove all multi-related pending writes
 		const auto multiRelated = isMulti || program != SINGLE;
 
+		// Remove presets of the conflicting mode type
 		for (auto it = m_pendingPresetWrites.begin(); it != m_pendingPresetWrites.end();)
 		{
 			const auto& pendingPreset = *it;
-
 			const auto pendingIsMultiRelated = pendingPreset.isMulti || pendingPreset.program != SINGLE;
-
 			if (multiRelated != pendingIsMultiRelated)
 				it = m_pendingPresetWrites.erase(it);
 			else
 				++it;
 		}
 
-		for(auto it = m_pendingPresetWrites.begin(); it != m_pendingPresetWrites.end();)
+		if(!multiRelated)
 		{
-			const auto& pendingPreset = *it;
-			if (pendingPreset.isMulti == isMulti && pendingPreset.program == program)
-				it = m_pendingPresetWrites.erase(it);
-			else
-				++it;
+			// Single-mode: keep only the latest selection — the user doesn't need
+			// intermediate presets that were skipped during rapid switching.
+			m_pendingPresetWrites.clear();
+		}
+		else
+		{
+			// Multi-mode load sequence must preserve ordering — remove only
+			// exact duplicates of the same program slot.
+			for(auto it = m_pendingPresetWrites.begin(); it != m_pendingPresetWrites.end();)
+			{
+				const auto& pendingPreset = *it;
+				if (pendingPreset.isMulti == isMulti && pendingPreset.program == program)
+					it = m_pendingPresetWrites.erase(it);
+				else
+					++it;
+			}
 		}
 
 		m_pendingPresetWrites.emplace_back(SPendingPresetWrite{program, isMulti, preset});
@@ -327,6 +337,17 @@ bool Microcontroller::sendPreset(const uint8_t program, const TPreset& preset, c
 	}
 
 	receiveUpgradedPreset();
+
+	// Arm the confirmation guard BEFORE writing to HDI08. The DSP thread runs
+	// concurrently and can consume + process the data and send its TX response
+	// before we reach the waitForPreset() call below, leaving the guard unset
+	// and allowing process() to fire a second preset mid-handshake.
+	const auto presetByteCount = isMulti ? m_rom.getMultiPresetSize() : m_rom.getSinglePresetSize();
+	for (auto& parser : m_hdi08TxParsers)
+		parser.waitForPreset(presetByteCount);
+
+	m_sentPresetProgram = program;
+	m_sentPresetIsMulti = isMulti;
 
 	writeHostBitsWithWait(0,1);
 	// Send header
@@ -337,12 +358,6 @@ bool Microcontroller::sendPreset(const uint8_t program, const TPreset& preset, c
 	m_hdi08.writeRX(presetToDSPWords(preset, isMulti));
 
 	LOG("Send to DSP: " << (isMulti ? "Multi" : "Single") << " to program " << static_cast<int>(program));
-
-	for (auto& parser : m_hdi08TxParsers)
-		parser.waitForPreset(isMulti ? m_rom.getMultiPresetSize() : m_rom.getSinglePresetSize());
-
-	m_sentPresetProgram = program;
-	m_sentPresetIsMulti = isMulti;
 
 	return true;
 }
@@ -1067,8 +1082,25 @@ void Microcontroller::process()
 
 	std::lock_guard lock(m_mutex);
 
-	if(m_loadingState || m_pendingPresetWrites.empty() || !m_hdi08.rxEmpty() || waitingForPresetReceiveConfirmation())
+	if(m_loadingState || m_pendingPresetWrites.empty() || !m_hdi08.rxEmpty())
 		return;
+
+	if(waitingForPresetReceiveConfirmation())
+	{
+		// The DSP may have failed to send back its confirmation (e.g. briefly
+		// executed at an invalid PC). Time out so the queue doesn't stall forever.
+		if(++m_presetConfirmationWaitCount < m_presetConfirmationTimeout)
+			return;
+
+		LOG("Preset confirmation timeout — resetting parser wait state");
+		for(auto& parser : m_hdi08TxParsers)
+			parser.resetWait();
+		m_presetConfirmationWaitCount = 0;
+	}
+	else
+	{
+		m_presetConfirmationWaitCount = 0;
+	}
 
 	const auto preset = m_pendingPresetWrites.front();
 	m_pendingPresetWrites.pop_front();
