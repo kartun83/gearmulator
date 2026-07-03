@@ -2,6 +2,7 @@
 
 #include "jucePluginEditorLib/settingsDeviceSpecific.h"
 
+#include <cstdint>
 #include <vector>
 
 namespace Rml
