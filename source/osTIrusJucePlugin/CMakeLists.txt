@@ -9,6 +9,7 @@ set(SOURCES
 	OsTIrusEditorState.h
 	OsTIrusProcessor.cpp
 	OsTIrusProcessor.h
+	clapPresetDiscovery.cpp
 
 	tus_settings_gui_OsTIrus.rcss
 	tus_settings_gui_OsTIrus.rml
@@ -30,4 +31,5 @@ buildSkinHeader()
 
 juce_add_binary_data(osTIrusJucePlugin_BinaryData SOURCES ${ASSETS} ${ASSETS_SKINS})
 
+set(osTIrusJucePlugin_CLAP_SUPPORTS_CUSTOM_FACTORY 1)
 createJucePluginWithFX(osTIrusJucePlugin "OsTIrus" "Ttip" "Ttif" osTIrusJucePlugin_BinaryData virusJucePlugin)

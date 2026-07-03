@@ -371,6 +371,20 @@ bool ROMFile::getPreset(const uint32_t _offset, TPreset& _out) const
 	return true;
 }
 
+const char* ROMFile::getSingleCategoryName(const uint8_t _index)
+{
+	static const char* const names[g_categoryCount] = {
+		"--",          "Lead",       "Bass",    "Pad",        "Decay",
+		"Pluck",       "Acid",       "Classic", "Arpeggiator","Effects",
+		"Drums",       "Percussion", "Input",   "Vocoder",    "Favourite 1",
+		"Favourite 2", "Favourite 3","Organ",   "Piano",      "String",
+		"FM",          "Digital",    "Atomizer"
+	};
+	if (_index >= g_categoryCount)
+		return nullptr;
+	return names[_index];
+}
+
 std::string ROMFile::getSingleName(const TPreset& _preset)
 {
 	return getPresetName(_preset, 240, 249);

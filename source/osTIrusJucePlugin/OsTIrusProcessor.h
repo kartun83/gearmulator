@@ -32,6 +32,10 @@ public:
 	void audioProcessorChanged(juce::AudioProcessor*, const ChangeDetails&) override {}
 	void audioProcessorParameterChangeGestureBegin(juce::AudioProcessor*, int _parameterIndex) override;
 
+	// CLAP_EXT_PRESET_LOAD
+	bool supportsPresetLoad() const noexcept override { return true; }
+	bool presetLoadFromLocation(uint32_t _locationKind, const char* _location, const char* _loadKey) noexcept override;
+
 private:
 	// Part whose parameters the current remote control pages expose.
 	// Updated by the onCurrentPartChanged event; triggers a page refresh.
