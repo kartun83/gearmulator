@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <istream>
 #include <thread>
 #include <vector>
 #include <string>

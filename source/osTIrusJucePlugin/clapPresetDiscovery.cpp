@@ -14,12 +14,14 @@
 
 #include "baseLib/filesystem.h"
 
+#include <algorithm>
 #include <cstring>
 #include <cstdio>
 #include <cctype>
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <fstream>
 
 // ---------------------------------------------------------------------------

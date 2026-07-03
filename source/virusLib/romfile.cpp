@@ -1,5 +1,8 @@
 #include <fstream>
 #include <algorithm>
+#include <iterator>
+#include <memory>
+#include <utility>
 
 #include "romfile.h"
 #include "utils.h"

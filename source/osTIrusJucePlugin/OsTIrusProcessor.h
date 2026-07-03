@@ -4,6 +4,8 @@
 
 #include "baseLib/event.h"
 
+#include <array>
+
 #include "clap-juce-extensions/clap-juce-extensions.h"
 
 #include <string>

@@ -6,6 +6,9 @@
 
 #include "clap-juce-extensions/clap-juce-extensions.h"
 
+#include <cstdint>
+#include <iterator>
+
 namespace virusTI
 {
 	struct RemoteControlsPage
