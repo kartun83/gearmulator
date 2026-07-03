@@ -52,6 +52,12 @@ public:
 	static std::string getMultiName(const TPreset& _preset);
 	static std::string getPresetName(const TPreset& _preset, uint32_t _first, uint32_t _last);
 
+	// Category names (indices 0-22).  Index 0 = "--" (none).
+	static constexpr uint32_t g_categoryCount = 23;
+	static const char* getSingleCategoryName(uint8_t _index);
+	static uint8_t getSingleCategory1(const TPreset& _preset) { return _preset[251]; }
+	static uint8_t getSingleCategory2(const TPreset& _preset) { return _preset[252]; }
+
 	std::thread bootDSP(DspSingle& _dsp) const;
 
 	bool isValid() const { return m_bootRom.size > 0; }

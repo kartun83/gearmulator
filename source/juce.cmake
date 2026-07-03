@@ -185,12 +185,18 @@ macro(createJucePlugin targetName productName isSynth plugin4CC binaryDataProjec
 	endif()
 
 	if(USE_CLAP)
+		set(_clapCustomFactory 0)
+		if(DEFINED ${targetName}_CLAP_SUPPORTS_CUSTOM_FACTORY)
+			set(_clapCustomFactory ${${targetName}_CLAP_SUPPORTS_CUSTOM_FACTORY})
+		endif()
+
 		clap_juce_extensions_plugin(TARGET ${targetName}
 			CLAP_ID "com.theusualsuspects.${plugin4CC}"
 			CLAP_FEATURES ${clapFeatures}
 			CLAP_SUPPORT_URL "https://dsp56300.wordpress.com"
 			CLAP_MANUAL_URL "https://dsp56300.wordpress.com"
 			CLAP_USE_JUCE_PARAMETER_RANGES "DISCRETE"
+			CLAP_SUPPORTS_CUSTOM_FACTORY ${_clapCustomFactory}
 			)
 		set_property(TARGET ${targetName}_CLAP PROPERTY FOLDER ${targetName})
 		add_dependencies(${targetName}_All ${targetName}_CLAP)
