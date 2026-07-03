@@ -63,6 +63,9 @@ Framework:
 - [Imp] Sync the in-app/LCD version string to 2.2.6.1 (using CMake's
         version tweak component) so this build is distinguishable
         from stock 2.2.6 at a glance.
+- [Imp] Bump vendored freetype from 2.13.3 to 2.14.3 (~315 upstream
+        commits, includes numerous integer-overflow hardening fixes
+        in the autofit/truetype/psaux modules).
 
 2.2.6:
 
