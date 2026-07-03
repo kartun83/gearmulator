@@ -1,5 +1,59 @@
 Release Notes
 
+2.2.6-kartun83.1:
+
+This is an unofficial personal build (based on upstream 2.2.6) that
+merges together several of my pull requests against dsp56300/gearmulator.
+As of this release, none of the following pull requests have been
+accepted/merged upstream:
+
+  #265 Feature/rmlui svg plugin
+  #266 Fix/arp clock sync
+  #267 CLAP: Fix tail length for Virus
+  #268 Feature/CLAP: remote controls
+  #269 Feature: panic skin buttons
+  #270 Fix/callasync use after free
+  #271 Feature/clap-juce-extensions 1.2.7
+
+The CLAP preset-discovery feature below has not been submitted
+upstream yet.
+
+OsTIrus:
+
+- [New] Implement CLAP_EXT_PRESET_LOAD and a CLAP preset-discovery
+        provider so supporting hosts can index and load factory/user
+        Virus TI presets without loading the plugin (PR pending).
+- [New] Add CLAP_EXT_REMOTE_CONTROLS support: 18 remote-control pages
+        covering the Virus TI parameter set, with focused-page
+        suggestions advertised to the host on parameter gesture begin
+        (PR #268).
+- [New] Expose panic actions (All Notes Off / reset) as button IDs on
+        the main skin (PR #269).
+- [Imp] Implement CLAP_EXT_TAIL so hosts stop processing after the
+        release tail instead of running indefinitely (PR #267).
+- [Imp] Bump clap-juce-extensions to CLAP 1.2.7 and add
+        CLAP_SUPPORTS_CUSTOM_FACTORY, required by preset discovery
+        (PR #271).
+- [New] Add RmlUi SVG plugin support: inline SVG and dynamic
+        inner_rml in the skin engine (PR #265).
+
+Framework:
+
+- [Fix] Fix MIDI clock phase and loop re-sync issues affecting ARP
+        sync (PR #266).
+- [Fix] Fix use-after-free in callAsync lambdas capturing `this`
+        without an instance-set guard (PR #270).
+- [Fix] JIT: guard against unbounded recursion when firmware
+        self-modifying code invalidates a block mid-compile; grow and
+        execute out-of-bounds JIT table entries instead of reading
+        past the table (PR #270).
+- [Fix] Fix stale circular-reference check in
+        JitBlockChain::getChildBlock() after JIT table resizing
+        (PR #270).
+- [Fix] Fix MmuArray reallocation crash on macOS (PR #270).
+- [Fix] Fix macOS build script and universal binary SSE flag scoping.
+- [Fix] Replace deprecated -Ofast with -O3 -ffast-math on Apple clang.
+
 2.2.6:
 
 Framework:
