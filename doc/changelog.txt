@@ -37,6 +37,13 @@ OsTIrus:
 - [New] Add RmlUi SVG plugin support: inline SVG and dynamic
         inner_rml in the skin engine (PR #265).
 
+Osirus:
+
+- [New] Add CLAP_EXT_REMOTE_CONTROLS parity with OsTIrus: 16
+        remote-control pages built from the classic Virus A/B/C
+        parameter set (no Filter Bank insert board, unified
+        Delay/Reverb effect, unlike Virus TI).
+
 Framework:
 
 - [Fix] Fix MIDI clock phase and loop re-sync issues affecting ARP
@@ -53,6 +60,9 @@ Framework:
 - [Fix] Fix MmuArray reallocation crash on macOS (PR #270).
 - [Fix] Fix macOS build script and universal binary SSE flag scoping.
 - [Fix] Replace deprecated -Ofast with -O3 -ffast-math on Apple clang.
+- [Imp] Sync the in-app/LCD version string to 2.2.6.1 (using CMake's
+        version tweak component) so this build is distinguishable
+        from stock 2.2.6 at a glance.
 
 2.2.6:
 
