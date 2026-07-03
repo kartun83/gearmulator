@@ -52,6 +52,9 @@ namespace virus
 		    return getModel() == virusLib::DeviceModel::Snow ? 4 : 16;
 	    }
 
+		void setPresetConfirmationTimeout(uint32_t _timeout);
+		uint32_t getPresetConfirmationTimeout() const;
+
 	protected:
 	    void postConstruct(std::vector<virusLib::ROMFile>&& _roms);
 

@@ -116,15 +116,15 @@ namespace jucePluginEditorLib::patchManager
 
 		void setCurrentPart(uint32_t _part);
 
+		static std::mutex& getInstancesMutex();
+		static std::set<PatchManager*>& getInstances();
+
 	protected:
 		void updateStateAsync(uint32_t _part, const pluginLib::patchDB::PatchPtr& _patch);
 
 		void startLoaderThread(const juce::File& _migrateFromDir = {}) override;
 
 	private:
-		static std::mutex& getInstancesMutex();
-		static std::set<PatchManager*>& getInstances();
-
 		pluginLib::patchDB::SearchHandle getSearchHandle(const pluginLib::patchDB::DataSource& _ds, bool _selectTreeItem);
 
 		State m_state;

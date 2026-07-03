@@ -688,4 +688,15 @@ namespace virusLib
 	{
 		applyDspMemoryPatches(m_dsp.get(), m_dsp2, m_rom);
 	}
+
+	void Device::setPresetConfirmationTimeout(const uint32_t _timeout)
+	{
+		if(m_mc)
+			m_mc->setPresetConfirmationTimeout(_timeout);
+	}
+
+	uint32_t Device::getPresetConfirmationTimeout() const
+	{
+		return m_mc ? m_mc->getPresetConfirmationTimeout() : 500;
+	}
 }

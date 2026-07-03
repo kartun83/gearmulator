@@ -1,5 +1,8 @@
 #include "pluginEditor.h"
 
+#include <mutex>
+#include <set>
+
 #include "pluginProcessor.h"
 
 #include "settings.h"
@@ -54,16 +57,37 @@ namespace jucePluginEditorLib
 			jucePluginData::getNamedResource
 		};
 	}
+	std::mutex& Editor::getInstancesMutex()
+	{
+		static std::mutex mutex;
+		return mutex;
+	}
+
+	std::set<Editor*>& Editor::getInstances()
+	{
+		static std::set<Editor*> instances;
+		return instances;
+	}
+
 	Editor::Editor(Processor& _processor, Skin _skin)
 		: m_processor(_processor)
 		, m_skin(std::move(_skin))
 		, m_rmlInterfaces(*this)
 	{
+		{
+			std::lock_guard lock(getInstancesMutex());
+			getInstances().insert(this);
+		}
 		showDisclaimer();
 	}
 
 	Editor::~Editor()
 	{
+		{
+			std::lock_guard lock(getInstancesMutex());
+			getInstances().erase(this);
+		}
+
 		if (auto* translator = m_processor.getMidiLearnTranslator())
 			translator->onPresetChanged = nullptr;
 
@@ -896,10 +920,14 @@ namespace jucePluginEditorLib
 		{
 			translator->onPresetChanged = [this]()
 			{
-				juce::MessageManager::callAsync([this]
+				auto* self = this;
+				juce::MessageManager::callAsync([self]
 				{
-					if (m_overlays)
-						m_overlays->refreshMidiLearnOverlays();
+					std::lock_guard<std::mutex> lock(getInstancesMutex());
+					if (getInstances().find(self) == getInstances().end())
+						return;
+					if (self->m_overlays)
+						self->m_overlays->refreshMidiLearnOverlays();
 				});
 			};
 		}
@@ -1093,20 +1121,24 @@ namespace jucePluginEditorLib
 					auto* selectedParam = m_midiLearnSelectedParam;
 					m_midiLearnSelectedParam = nullptr;
 
-					juce::MessageManager::callAsync([this, selectedParam]
+					auto* self = this;
+					juce::MessageManager::callAsync([self, selectedParam]
 					{
-						if (m_overlays)
+						std::lock_guard<std::mutex> lock(getInstancesMutex());
+						if (getInstances().find(self) == getInstances().end())
+							return;
+						if (self->m_overlays)
 						{
-							m_overlays->forEachOverlayForParameter(selectedParam, [](ParameterOverlay& _overlay)
+							self->m_overlays->forEachOverlayForParameter(selectedParam, [](ParameterOverlay& _overlay)
 							{
 								_overlay.setMidiLearnListening(false);
 							});
 
 							// Refresh all overlays in case a CC was reassigned from another parameter
-							m_overlays->refreshMidiLearnOverlays();
+							self->m_overlays->refreshMidiLearnOverlays();
 						}
 
-						m_processor.saveDefaultMidiLearnPreset();
+						self->m_processor.saveDefaultMidiLearnPreset();
 					});
 				};
 

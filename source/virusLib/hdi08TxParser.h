@@ -43,6 +43,13 @@ namespace virusLib
 			return m_remainingPresetBytes != 0;
 		}
 
+		void resetWait()
+		{
+			m_remainingPresetBytes = 0;
+			m_state = State::Default;
+			m_presetData.clear();
+		}
+
 		bool hasDspBooted() const
 		{
 			return m_dspHasBooted;

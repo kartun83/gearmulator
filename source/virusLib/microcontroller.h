@@ -42,6 +42,9 @@ public:
 	void createDefaultState();
 	void process();
 
+	void setPresetConfirmationTimeout(uint32_t _timeout) { m_presetConfirmationTimeout = _timeout; }
+	uint32_t getPresetConfirmationTimeout() const { return m_presetConfirmationTimeout; }
+
 #if !SYNTHLIB_DEMO_MODE
 	bool getState(std::vector<unsigned char>& _state, synthLib::StateType _type);
 	bool setState(const std::vector<unsigned char>& _state, synthLib::StateType _type);
@@ -137,6 +140,8 @@ private:
 
 	mutable std::recursive_mutex m_mutex;
 	bool m_loadingState = false;
+	uint32_t m_presetConfirmationWaitCount = 0;
+	uint32_t m_presetConfirmationTimeout = 500;  // configurable; see setPresetConfirmationTimeout()
 };
 
 }

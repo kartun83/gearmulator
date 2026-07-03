@@ -82,6 +82,10 @@ namespace virus
 		const auto latencyBlocks = getConfig().getIntValue("latencyBlocks", static_cast<int>(getPlugin().getLatencyBlocks()));
 		Processor::setLatencyBlocks(latencyBlocks);
 
+		const auto timeout = static_cast<uint32_t>(getConfig().getIntValue("presetConfirmationTimeout", 500));
+		if(auto* d = dynamic_cast<virusLib::Device*>(m_device.get()))
+			d->setPresetConfirmationTimeout(timeout);
+
 		zynthianExportLv2Presets();
 	}
 
@@ -258,4 +262,22 @@ double virus::VirusProcessor::getTailLengthSeconds() const
 	}
 
 	return tail;
+}
+
+namespace virus
+{
+	void VirusProcessor::setPresetConfirmationTimeout(const uint32_t _timeout)
+	{
+		getConfig().setValue("presetConfirmationTimeout", static_cast<int>(_timeout));
+		getConfig().saveIfNeeded();
+		if(auto* d = dynamic_cast<virusLib::Device*>(m_device.get()))
+			d->setPresetConfirmationTimeout(_timeout);
+	}
+
+	uint32_t VirusProcessor::getPresetConfirmationTimeout() const
+	{
+		if(const auto* d = dynamic_cast<const virusLib::Device*>(m_device.get()))
+			return d->getPresetConfirmationTimeout();
+		return 500;
+	}
 }

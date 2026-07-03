@@ -31,9 +31,11 @@ namespace genericVirusUI
 	private:
 		void setupSamplerateButtons(Rml::Element* _template, const std::vector<float>& _samplerates, const std::vector<float>& _preferred, float _current, bool _usePreferred, virus::VirusProcessor& _processor);
 		void updateButtons() const;
+		void updateTimeoutButtons() const;
 
 		const VirusEditor* m_editor;
 		std::vector<std::pair<float, juceRmlUi::ElemButton*>> m_samplerateButtons;
+		std::vector<std::pair<uint32_t, juceRmlUi::ElemButton*>> m_timeoutButtons;
 	};
 }
 

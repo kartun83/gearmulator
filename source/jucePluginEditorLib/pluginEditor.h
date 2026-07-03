@@ -1,5 +1,8 @@
 #pragma once
 
+#include <mutex>
+#include <set>
+
 #include "parameterOverlays.h"
 #include "settingsDeviceSpecific.h"
 #include "skin.h"
@@ -88,6 +91,9 @@ namespace jucePluginEditorLib
 
 		Editor(Processor& _processor, Skin _skin);
 		~Editor() override;
+
+		static std::mutex& getInstancesMutex();
+		static std::set<Editor*>& getInstances();
 
 		Editor(const Editor&) = delete;
 		Editor(Editor&&) = delete;
