@@ -56,8 +56,8 @@ elseif(APPLE)
 	    "-framework OpenGL"
 	    "-framework QuartzCore"  	
 	)
-	string(APPEND CMAKE_C_FLAGS_RELEASE " -funroll-loops -Ofast -flto -fno-stack-protector")
-	string(APPEND CMAKE_CXX_FLAGS_RELEASE " -funroll-loops -Ofast -flto -fno-stack-protector")
+	string(APPEND CMAKE_C_FLAGS_RELEASE " -funroll-loops -O3 -ffast-math -flto -fno-stack-protector")
+	string(APPEND CMAKE_CXX_FLAGS_RELEASE " -funroll-loops -O3 -ffast-math -flto -fno-stack-protector")
 else()
 	message("CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
 	message("CMAKE_HOST_SYSTEM_PROCESSOR: " ${CMAKE_HOST_SYSTEM_PROCESSOR})
