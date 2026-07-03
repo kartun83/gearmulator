@@ -29,7 +29,7 @@ public:
 	// juce::AudioProcessorListener — used to detect parameter gesture begin
 	// and suggest the corresponding remote controls page to the host.
 	void audioProcessorParameterChanged(juce::AudioProcessor*, int, float) override {}
-	void audioProcessorChanged(juce::AudioProcessor*, const ChangeDetails&) override {}
+	void audioProcessorChanged(juce::AudioProcessor*, const juce::AudioProcessorListener::ChangeDetails&) override {}
 	void audioProcessorParameterChangeGestureBegin(juce::AudioProcessor*, int _parameterIndex) override;
 
 	// CLAP_EXT_PRESET_LOAD
