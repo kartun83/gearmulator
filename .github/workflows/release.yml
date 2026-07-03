@@ -57,7 +57,7 @@ jobs:
         name: ${{ github.event.inputs.version }}
         tag_name: ${{ github.event.inputs.version }}
         files: |
-          ${{github.workspace}}/build/*${{ github.event.inputs.version }}*.zip
-          ${{github.workspace}}/build/*${{ github.event.inputs.version }}*.rpm
-          ${{github.workspace}}/build/*${{ github.event.inputs.version }}*.deb
+          ${{github.workspace}}/build/*.zip
+          ${{github.workspace}}/build/*.rpm
+          ${{github.workspace}}/build/*.deb
           ${{github.workspace}}/doc/changelog.txt
