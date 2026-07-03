@@ -7,6 +7,7 @@ set(SOURCES
 	OsirusEditorState.h
 	OsirusProcessor.cpp
 	OsirusProcessor.h
+	VirusRemoteControls.h
 
 	skins/Hoverland/VirusC_Hoverland.rml
 	skins/Hoverland/VirusC_Hoverland.rcss
