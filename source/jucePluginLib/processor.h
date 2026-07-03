@@ -69,6 +69,10 @@ namespace pluginLib
 
 		void addMidiEvent(const synthLib::SMidiEvent& _ev);
 
+		void panicAllNotesOff();
+		void panicNoteOffEveryNote();
+		void panicRebootDevice();
+
 		void handleIncomingMidiMessage(juce::MidiInput* _source, const juce::MidiMessage& _message);
 
 	    Controller& getController();

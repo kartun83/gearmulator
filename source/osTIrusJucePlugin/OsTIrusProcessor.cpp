@@ -1,11 +1,15 @@
 #include "OsTIrusProcessor.h"
 #include "OsTIrusEditorState.h"
+#include "VirusTIRemoteControls.h"
 
 // ReSharper disable once CppUnusedIncludeDirective
 #include "BinaryData.h"
 #include "jucePluginLib/processorPropertiesInit.h"
 
 #include "virusLib/romloader.h"
+
+#include "jucePluginLib/controller.h"
+
 
 namespace
 {
@@ -19,6 +23,8 @@ namespace
 		return opts;
 	}
 }
+
+// Page table lives in VirusTIRemoteControls.h
 
 //==============================================================================
 OsTIrusProcessor::OsTIrusProcessor() :
@@ -36,11 +42,86 @@ OsTIrusProcessor::OsTIrusProcessor() :
 	, virusLib::DeviceModel::TI2)
 {
 	postConstruct(virusLib::ROMLoader::findROMs(virusLib::DeviceModel::TI2, virusLib::DeviceModel::Snow));
+
+	// Subscribe to part-selection changes so remote controls pages stay in sync.
+	// postConstruct() guarantees the controller exists at this point.
+	m_partChangedListener.set(getController().onCurrentPartChanged, [this](const uint8_t _part)
+	{
+		m_remoteControlsPart = _part;
+		remoteControlsChanged();
+	});
+
+	// Build reverse lookup: parameter name → page index.
+	// Used to suggest the right remote controls page when the user touches a control.
+	for(uint32_t pageIdx = 0; pageIdx < virusTI::g_remoteControlsPageCount; ++pageIdx)
+	{
+		const auto& page = virusTI::g_remoteControlsPages[pageIdx];
+		for(const auto* name : page.params)
+		{
+			if(name)
+				m_paramNameToPage.emplace(name, pageIdx);
+		}
+	}
+
+	addListener(this);
 }
 
 OsTIrusProcessor::~OsTIrusProcessor()
 {
+	removeListener(this);
 	destroyEditorState();
+}
+
+void OsTIrusProcessor::audioProcessorParameterChangeGestureBegin(juce::AudioProcessor*, const int _parameterIndex)
+{
+	if(!getConfig().getBoolValue(g_clapSuggestPageKey, true))
+		return;
+
+	const auto& params = getParameters();
+	if(_parameterIndex < 0 || _parameterIndex >= static_cast<int>(params.size()))
+		return;
+
+	const auto name = params[_parameterIndex]->getName(255).toStdString();
+	const auto it   = m_paramNameToPage.find(name);
+	if(it == m_paramNameToPage.end())
+		return;
+
+	suggestRemoteControlsPage((it->second << 8) | m_remoteControlsPart);
+}
+
+uint32_t OsTIrusProcessor::remoteControlsPageCount() noexcept
+{
+	return virusTI::g_remoteControlsPageCount;
+}
+
+bool OsTIrusProcessor::remoteControlsPageFill(
+	const uint32_t _pageIndex,
+	juce::String& _sectionName,
+	uint32_t& _pageID,
+	juce::String& _pageName,
+	std::array<juce::AudioProcessorParameter*, CLAP_REMOTE_CONTROLS_COUNT>& _params) noexcept
+{
+	if(_pageIndex >= virusTI::g_remoteControlsPageCount)
+		return false;
+
+	const auto& page = virusTI::g_remoteControlsPages[_pageIndex];
+	const auto* ctrl = getControllerConst();
+
+	_sectionName = page.sectionName;
+	_pageName    = page.pageName;
+	// Encode page index + part into the ID so the host can distinguish sets
+	// across part changes while keeping page indices stable within a set.
+	_pageID = (_pageIndex << 8) | m_remoteControlsPart;
+
+	for(uint32_t i = 0; i < CLAP_REMOTE_CONTROLS_COUNT; ++i)
+	{
+		_params[i] = nullptr;
+		if(!ctrl || !page.params[i])
+			continue;
+		_params[i] = ctrl->getParameter(page.params[i], m_remoteControlsPart);
+	}
+
+	return true;
 }
 
 jucePluginEditorLib::PluginEditorState* OsTIrusProcessor::createEditorState()

@@ -87,28 +87,17 @@ namespace jucePluginEditorLib
 
 	void SettingsMidi::panicSendAllNotesOff() const
 	{
-		for(uint8_t c=0; c<16; ++c)
-		{
-			synthLib::SMidiEvent ev(synthLib::MidiEventSource::Editor, synthLib::M_CONTROLCHANGE + c, synthLib::MC_ALLNOTESOFF);
-			m_processor.addMidiEvent(ev);
-		}
+		m_processor.panicAllNotesOff();
 	}
 
 	void SettingsMidi::panicSendNoteOffForEveryNote() const
 	{
-		for(uint8_t c=0; c<16; ++c)
-		{
-			for(uint8_t n=0; n<128; ++n)
-			{
-				synthLib::SMidiEvent ev(synthLib::MidiEventSource::Editor, synthLib::M_NOTEOFF + c, n, 64, n * 256);
-				m_processor.addMidiEvent(ev);
-			}
-		}
+		m_processor.panicNoteOffEveryNote();
 	}
 
 	void SettingsMidi::panicRebootDevice() const
 	{
-		m_processor.rebootDevice();
+		m_processor.panicRebootDevice();
 	}
 
 	void SettingsMidi::createMatrix(Rml::Element* _root, synthLib::MidiRoutingMatrix::EventType _type, const char* _name)

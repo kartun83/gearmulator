@@ -115,6 +115,15 @@ namespace genericVirusUI
 
 		m_deviceModel = findChild("DeviceModel", false);
 
+		if(auto* bt = findChild("btPanicAllNotesOff", false))
+			juceRmlUi::EventListener::AddClick(bt, [this] { m_processor.panicAllNotesOff(); });
+
+		if(auto* bt = findChild("btPanicNoteOffEveryNote", false))
+			juceRmlUi::EventListener::AddClick(bt, [this] { m_processor.panicNoteOffEveryNote(); });
+
+		if(auto* bt = findChild("btPanicReboot", false))
+			juceRmlUi::EventListener::AddClick(bt, [this] { m_processor.panicRebootDevice(); });
+
 		auto* presetSave = findChild("PresetSave", false);
 		if(presetSave)
 			juceRmlUi::EventListener::Add(presetSave, Rml::EventId::Click, [this](Rml::Event& _event) { savePreset(_event); });

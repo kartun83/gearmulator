@@ -16,6 +16,7 @@
 #include "client/remoteDevice.h"
 
 #include "synthLib/deviceException.h"
+#include "synthLib/midiTypes.h"
 #include "synthLib/os.h"
 #include "synthLib/midiBufferParser.h"
 #include "synthLib/romLoader.h"
@@ -61,6 +62,32 @@ namespace pluginLib
 		destroyController();
 		m_plugin.reset();
 		m_device.reset();
+	}
+
+	void Processor::panicAllNotesOff()
+	{
+		for(uint8_t c = 0; c < 16; ++c)
+		{
+			synthLib::SMidiEvent ev(synthLib::MidiEventSource::Editor, synthLib::M_CONTROLCHANGE + c, synthLib::MC_ALLNOTESOFF);
+			addMidiEvent(ev);
+		}
+	}
+
+	void Processor::panicNoteOffEveryNote()
+	{
+		for(uint8_t c = 0; c < 16; ++c)
+		{
+			for(uint8_t n = 0; n < 128; ++n)
+			{
+				synthLib::SMidiEvent ev(synthLib::MidiEventSource::Editor, synthLib::M_NOTEOFF + c, n, 64, n * 256);
+				addMidiEvent(ev);
+			}
+		}
+	}
+
+	void Processor::panicRebootDevice()
+	{
+		rebootDevice();
 	}
 
 	void Processor::addMidiEvent(const synthLib::SMidiEvent& _ev)
