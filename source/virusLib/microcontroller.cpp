@@ -1082,14 +1082,20 @@ void Microcontroller::process()
 
 	std::lock_guard lock(m_mutex);
 
-	if(m_loadingState || m_pendingPresetWrites.empty() || !m_hdi08.rxEmpty())
+	if(m_loadingState)
 		return;
 
 	if(waitingForPresetReceiveConfirmation())
 	{
 		// The DSP may have failed to send back its confirmation (e.g. briefly
-		// executed at an invalid PC). Time out so the queue doesn't stall forever.
-		if(++m_presetConfirmationWaitCount < m_presetConfirmationTimeout)
+		// executed at an invalid PC). Time out so the wait doesn't stall forever.
+		// This must run regardless of m_pendingPresetWrites/m_hdi08.rxEmpty() state -
+		// otherwise a single missed confirmation wedges
+		// waitingForPresetReceiveConfirmation() permanently, which in turn
+		// permanently defers every REQUEST_SINGLE/REQUEST_MULTI readback used
+		// to sync the UI after a patch load (see readMidiOut()).
+		++m_presetConfirmationWaitCount;
+		if(m_presetConfirmationWaitCount < m_presetConfirmationTimeout)
 			return;
 
 		LOG("Preset confirmation timeout — resetting parser wait state");
@@ -1101,6 +1107,9 @@ void Microcontroller::process()
 	{
 		m_presetConfirmationWaitCount = 0;
 	}
+
+	if(m_pendingPresetWrites.empty() || !m_hdi08.rxEmpty())
+		return;
 
 	const auto preset = m_pendingPresetWrites.front();
 	m_pendingPresetWrites.pop_front();

@@ -68,7 +68,7 @@ namespace virus
             PresetSource source = PresetSource::Unknown;
         };
 
-    	Controller(VirusProcessor&, virusLib::DeviceModel _defaultModel, unsigned char deviceId = 0x00);
+    	Controller(VirusProcessor&, virusLib::DeviceModel _defaultModel, unsigned char deviceId = virusLib::OMNI_DEVICE_ID);
 		~Controller() override;
 
         synthLib::SysexBuffer createSingleDump(uint8_t _part, uint8_t _bank, uint8_t _program);
