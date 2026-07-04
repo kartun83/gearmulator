@@ -66,6 +66,16 @@ Framework:
 - [Imp] Bump vendored freetype from 2.13.3 to 2.14.3 (~315 upstream
         commits, includes numerous integer-overflow hardening fixes
         in the autofit/truetype/psaux modules).
+- [Fix] Fix Patch Manager search-handle leak that caused host CPU
+        usage to climb after loading multiple banks and switching
+        patches, never recovering: DB::updateStateAsync() left a
+        Search behind in DB::m_searches whenever no datasource match
+        was found, so every subsequent bank load rescanned an
+        ever-growing set of stale searches.
+- [Fix] Fix related unbounded growth of DB::m_cancelledSearches:
+        cancelSearch() tracked every cancelled handle forever, even
+        though only searches still pending on the loader thread are
+        ever checked against that set.
 
 2.2.6:
 
