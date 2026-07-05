@@ -36,6 +36,18 @@ OsTIrus:
         (PR #271).
 - [New] Add RmlUi SVG plugin support: inline SVG and dynamic
         inner_rml in the skin engine (PR #265).
+- [Fix] Fix parameter UI not updating after a patch load: the
+        confirmation-readback request the controller sends after every
+        load carried a fixed non-Omni device ID that didn't match the
+        TI device's configured Device ID, so Microcontroller silently
+        dropped it; the confirmation timeout could also wedge
+        permanently on a single missed DSP reply, deferring every
+        subsequent UI-sync readback.
+- [Fix] Fix CLAP preset/remote-control parameters staying stuck at
+        their initial value after a preset change in Bitwig: bump
+        clap-juce-extensions to emit CLAP_EVENT_PARAM_VALUE on
+        programChanged instead of relying on CLAP_PARAM_RESCAN_VALUES,
+        which Bitwig ignores for widget updates.
 
 Osirus:
 
@@ -76,6 +88,22 @@ Framework:
         cancelSearch() tracked every cancelled handle forever, even
         though only searches still pending on the loader thread are
         ever checked against that set.
+- [Fix] Fix MIDI-Learn parameter listener leak on unsubscribe: a
+        compacted listener-ID list was matched against the full
+        (possibly mapping-skipping) preset mapping list by index,
+        leaking a listener per mismatch on every preset change.
+- [Fix] Prevent macOS App Nap from throttling the plugin process
+        while idle/backgrounded, independent of individual threads'
+        own QoS/priority settings.
+- [Fix] Fix undefined behavior (NaN cast to uint32_t) when computing
+        macOS realtime thread parameters: the fallback samplerate/
+        blocksize values were only applied when the caller passed
+        nonzero values, but the only call site always passes zero.
+- [Fix] Fix ESAI frame-sync JIT spinloop-skip never converging:
+        fast-forwarding past a JIT-detected polling idiom left the
+        peripheral clock permanently one cycle short of its target,
+        because the "next real instruction" that normally closes that
+        gap never runs on this replaced-instruction path.
 
 2.2.6:
 
