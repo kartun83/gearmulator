@@ -27,7 +27,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt update && sudo apt install -y libgl1-mesa-dev xorg-dev libasound2-dev
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: "recursive"
 
@@ -48,7 +48,7 @@ jobs:
       run: ${{github.workspace}}/bin/tools/changelogGenerator -i ${{github.workspace}}/doc/changelog.txt -o ${{github.workspace}}/doc/changelog_split
 
     - name: Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         body_path: ${{github.workspace}}/doc/changelog_split/${{ github.event.inputs.version }}.txt
