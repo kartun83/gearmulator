@@ -123,6 +123,23 @@ Framework:
         because the "next real instruction" that normally closes that
         gap never runs on this replaced-instruction path.
 
+2.2.6-kartun83.5:
+
+Framework:
+
+- [Fix] Fix orphaned Patch Manager search when the panel/document is
+        destroyed mid-search: ListModel had no destructor, so a search
+        still in flight never called cancelSearch(), leaking a handle
+        in DB::m_searches and leaving the background search job
+        running indefinitely (PR #278).
+- [Fix] Guard the DSP56300 JIT's op_Wait() against silently spinning
+        without peripheral-clock progress, the same class of bug as
+        the ESAI frame-sync spinloop fix above.
+- [Imp] Fix CMake warnings: an invalid PRE_BUILD keyword on an
+        OUTPUT-style add_custom_command() in jucePluginLib, and bump
+        asmjit's cmake_minimum_required past the deprecated pre-3.10
+        compatibility mode.
+
 2.2.6:
 
 Framework:
