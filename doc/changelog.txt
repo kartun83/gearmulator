@@ -139,6 +139,13 @@ Framework:
         OUTPUT-style add_custom_command() in jucePluginLib, and bump
         asmjit's cmake_minimum_required past the deprecated pre-3.10
         compatibility mode.
+- [Fix] Fix a data race in the DSP56300 emulator's lock-free ring buffer
+        on non-ARM64 builds: the read/write counters shared between the
+        DSP thread and the microcontroller thread (interrupt queues) were
+        plain non-atomic size_t, which could let an optimizing compiler
+        hoist the wait-loop's read out of the loop entirely, or let a
+        reader observe a counter update before the corresponding data
+        write - reproduced as actual data corruption under stress testing.
 
 2.2.6:
 
