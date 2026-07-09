@@ -113,6 +113,20 @@ namespace genericVirusUI
 				updateTimeoutButtons();
 			});
 		}
+
+		// Diagnostic DSP idle-sleep toggle (A/B testing only, see VirusProcessor::setDiagnosticSleepEnabled)
+		if(auto* row = juceRmlUi::helper::findChild(_root, "btDiagnosticDspSleep", false))
+		{
+			m_diagnosticSleepButton = juceRmlUi::helper::findChildT<juceRmlUi::ElemButton>(row, "button");
+			m_diagnosticSleepButton->setChecked(processor.getDiagnosticSleepEnabled());
+
+			juceRmlUi::EventListener::AddClick(row, [this, &processor]
+			{
+				const auto enabled = !processor.getDiagnosticSleepEnabled();
+				processor.setDiagnosticSleepEnabled(enabled);
+				m_diagnosticSleepButton->setChecked(enabled);
+			});
+		}
 	}
 
 	void SettingsDspAudioOsTIrus::updateButtons() const

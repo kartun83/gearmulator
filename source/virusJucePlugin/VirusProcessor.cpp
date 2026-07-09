@@ -86,6 +86,10 @@ namespace virus
 		if(auto* d = dynamic_cast<virusLib::Device*>(m_device.get()))
 			d->setPresetConfirmationTimeout(timeout);
 
+		const auto diagnosticSleep = getConfig().getBoolValue("diagnosticDspIdleSleep", false);
+		if(auto* d = dynamic_cast<virusLib::Device*>(m_device.get()))
+			d->setDiagnosticSleepEnabled(diagnosticSleep);
+
 		zynthianExportLv2Presets();
 	}
 
@@ -279,5 +283,20 @@ namespace virus
 		if(const auto* d = dynamic_cast<const virusLib::Device*>(m_device.get()))
 			return d->getPresetConfirmationTimeout();
 		return 500;
+	}
+
+	void VirusProcessor::setDiagnosticSleepEnabled(const bool _enabled)
+	{
+		getConfig().setValue("diagnosticDspIdleSleep", _enabled);
+		getConfig().saveIfNeeded();
+		if(auto* d = dynamic_cast<virusLib::Device*>(m_device.get()))
+			d->setDiagnosticSleepEnabled(_enabled);
+	}
+
+	bool VirusProcessor::getDiagnosticSleepEnabled() const
+	{
+		if(const auto* d = dynamic_cast<const virusLib::Device*>(m_device.get()))
+			return d->getDiagnosticSleepEnabled();
+		return false;
 	}
 }

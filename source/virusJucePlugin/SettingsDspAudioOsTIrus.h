@@ -37,6 +37,7 @@ namespace genericVirusUI
 		const VirusEditor* m_editor;
 		std::vector<std::pair<float, juceRmlUi::ElemButton*>> m_samplerateButtons;
 		std::vector<std::pair<uint32_t, juceRmlUi::ElemButton*>> m_timeoutButtons;
+		juceRmlUi::ElemButton* m_diagnosticSleepButton = nullptr;
 	};
 }
 

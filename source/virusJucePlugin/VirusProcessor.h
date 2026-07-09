@@ -55,6 +55,10 @@ namespace virus
 		void setPresetConfirmationTimeout(uint32_t _timeout);
 		uint32_t getPresetConfirmationTimeout() const;
 
+		// DIAGNOSTIC ONLY, for A/B testing. See DSPThread::setDiagnosticSleepEnabled.
+		void setDiagnosticSleepEnabled(bool _enabled);
+		bool getDiagnosticSleepEnabled() const;
+
 	protected:
 	    void postConstruct(std::vector<virusLib::ROMFile>&& _roms);
 

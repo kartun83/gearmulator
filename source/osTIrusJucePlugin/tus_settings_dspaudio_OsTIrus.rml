@@ -49,5 +49,16 @@
 		</div>
 	</div>
 	<settingsspacer1/>
+	<div class="settings-advanced">
+		<h1>Diagnostic: DSP Idle-Sleep (A/B testing only)</h1>
+		<settingsspacer1/>
+		<h3>Experimental. Briefly suspends the DSP thread on a fixed schedule to help diagnose an intermittent crackling issue. Not a real feature and provides no CPU benefit. Leave off unless asked to test it.</h3>
+		<settingsspacer1/>
+		<div id="btDiagnosticDspSleep" class="settings-checkboxwithlabel">
+			<button id="button" class="settings-checkbox"/>
+			<label>Enable diagnostic DSP idle-sleep (default off)</label>
+		</div>
+	</div>
+	<settingsspacer1/>
 </body>
 </template>

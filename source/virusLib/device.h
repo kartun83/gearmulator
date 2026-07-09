@@ -60,6 +60,10 @@ namespace virusLib
 		void setPresetConfirmationTimeout(uint32_t _timeout);
 		uint32_t getPresetConfirmationTimeout() const;
 
+		// DIAGNOSTIC ONLY, for A/B testing. See DSPThread::setDiagnosticSleepEnabled.
+		void setDiagnosticSleepEnabled(bool _enabled);
+		bool getDiagnosticSleepEnabled() const;
+
 		static void applyDspMemoryPatches(const DspSingle* _dspA, const DspSingle* _dspB, const ROMFile& _rom);
 		void applyDspMemoryPatches() const;
 

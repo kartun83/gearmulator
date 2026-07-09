@@ -549,6 +549,13 @@ namespace virusLib
 			return m_mc->sendMIDI(ev, &m_frontpanelStateDSP);
 		}
 
+		// DIAGNOSTIC ONLY: suppress DSPThread's diagnostic sleep briefly around sysex/preset
+		// loads, to test whether the observed crackle is caused by the sleep landing during
+		// this bursty HDI08 activity specifically. See doc/dsp_threading_and_peripherals.md,
+		// Case study #3. Remove once answered - do not ship either way.
+		if(auto* thread = m_dsp->getDSPThread())
+			thread->notifyBurstActivity();
+
 		std::vector<synthLib::SMidiEvent> responses;
 
 		if(!m_mc->sendSysex(_ev.sysex, responses, _ev.source))
@@ -698,5 +705,23 @@ namespace virusLib
 	uint32_t Device::getPresetConfirmationTimeout() const
 	{
 		return m_mc ? m_mc->getPresetConfirmationTimeout() : 500;
+	}
+
+	void Device::setDiagnosticSleepEnabled(const bool _enabled)
+	{
+		if(m_dsp)
+			if(auto* thread = m_dsp->getDSPThread())
+				thread->setDiagnosticSleepEnabled(_enabled);
+		if(m_dsp2)
+			if(auto* thread = m_dsp2->getDSPThread())
+				thread->setDiagnosticSleepEnabled(_enabled);
+	}
+
+	bool Device::getDiagnosticSleepEnabled() const
+	{
+		if(m_dsp)
+			if(auto* thread = m_dsp->getDSPThread())
+				return thread->getDiagnosticSleepEnabled();
+		return false;
 	}
 }
